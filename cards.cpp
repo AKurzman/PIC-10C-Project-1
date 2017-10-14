@@ -1,96 +1,257 @@
-#include <string>
-#include <vector>
-#include <fstream>
-
-#ifndef CARDS_H
-#define CARDS_H
-
-using namespace std;
-
-enum suit_t { OROS, COPAS, ESPADAS, BASTOS };
+#include "cards.h"
+#include <cstdlib>
+#include <iostream>
+#include <time.h>
 
 /*
-The values for this type start at 0 and increase by one
-afterwards until they get to SIETE.
-The rank reported by the function Card::get_rank() below is
-the value listed here plus one.
-E.g:
-The rank of AS is reported as    static_cast<int>(AS) + 1   = 0 + 1 =  1
-The rank of SOTA is reported as  static_cast<int>(SOTA) + 1 = 9 + 1 = 10
+You might or might not need these two extra libraries
+#include <iomanip>
+#include <algorithm>
 */
-enum rank_t { AS, DOS, TRES, CUATRO, CINCO, SEIS, SIETE, SOTA = 9, CABALLO = 10, REY = 11 };
-
-class Card {
-public:
-	// Constructor assigns random rank & suit to card.
-	Card();
-
-	// Accessors 
-	string get_spanish_suit() const;
-	string get_spanish_rank() const;
-
-	/*
-	These are the only functions you'll need to code
-	for this class. See the implementations of the two
-	functions above to get an idea of how to proceed.
-	*/
-	string get_english_suit() const;
-	string get_english_rank() const;
-
-	// Converts card rank to number.
-	// The possible returns are: 1, 2, 3, 4, 5, 6, 7, 10, 11 and 12
-	int get_rank() const;
-
-	// Compare rank of two cards. E.g: Eight<Jack is true.
-	// Assume Ace is always 1. 
-	// Useful if you want to sort the cards.
-	bool operator < (Card card2) const;
-	double value();
-
-private:
-	suit_t suit;
-	rank_t rank;
-};
 
 
-class Hand {
-public:
-	// A vector of Cards
-	Hand();
-	int numCards() { return int(myCards.size()); }
-	void addCard(Card NewCard);
-	double getpoints() { return count; }
-	void printCards();
-	void erase();
+/* *************************************************
+Card class
+************************************************* */
 
-	// You decide what functions you'll need...
+/*
+Default constructor for the Card class.
+It could give repeated cards. This is OK.
+Most variations of Blackjack are played with
+several decks of cards at the same time.
+*/
+Card::Card() {
+	int r = 1 + rand() % 4;
+	switch (r) {
+	case 1: suit = OROS; break;
+	case 2: suit = COPAS; break;
+	case 3: suit = ESPADAS; break;
+	case 4: suit = BASTOS; break;
+	default: break;
+	}
 
-private:
-	vector<Card>myCards;
-	double count = 0.0;
-};
+	r = 1 + rand() % 10;
+	switch (r) {
+	case  1: rank = AS; break;
+	case  2: rank = DOS; break;
+	case  3: rank = TRES; break;
+	case  4: rank = CUATRO; break;
+	case  5: rank = CINCO; break;
+	case  6: rank = SEIS; break;
+	case  7: rank = SIETE; break;
+	case  8: rank = SOTA; break;
+	case  9: rank = CABALLO; break;
+	case 10: rank = REY; break;
+	default: break;
+	}
+}
+
+// Accessor: returns a string with the suit of the card in Spanish 
+string Card::get_spanish_suit() const {
+	string suitName;
+	switch (suit) {
+	case OROS:
+		suitName = "Oros";
+		break;
+	case COPAS:
+		suitName = "Copas";
+		break;
+	case ESPADAS:
+		suitName = "Espadas";
+		break;
+	case BASTOS:
+		suitName = "Bastos";
+		break;
+	default: break;
+	}
+	return suitName;
+}
+
+// Accessor: returns a string with the rank of the card in Spanish 
+string Card::get_spanish_rank() const {
+	string rankName;
+	switch (rank) {
+	case AS:
+		rankName = "As";
+		break;
+	case DOS:
+		rankName = "Dos";
+		break;
+	case TRES:
+		rankName = "Tres";
+		break;
+	case CUATRO:
+		rankName = "Cuatro";
+		break;
+	case CINCO:
+		rankName = "Cinco";
+		break;
+	case SEIS:
+		rankName = "Seis";
+		break;
+	case SIETE:
+		rankName = "Siete";
+		break;
+	case SOTA:
+		rankName = "Sota";
+		break;
+	case CABALLO:
+		rankName = "Caballo";
+		break;
+	case REY:
+		rankName = "Rey";
+		break;
+	default: break;
+	}
+	return rankName;
+}
 
 
-class Player {
-public:
-	// Constructor. 
-	//    Assigns initial amount of money
-	Player(int m);
-	void addCard(Card newCard);
 
-	int getMoney() { return money; };
-	void lose(int lost) { money -= lost; }
-	void win(int won) { money += won; }
-	Hand* getHand() { return &playerHand; }
-	void printCards();
-	void newHand();
+// Accessor: returns a string with the suit of the card in English 
+// This is just a stub! Modify it to your liking.
+string Card::get_english_suit() const {
+	string suitName;
+	switch (suit) {
+	case OROS:
+		suitName = "Golds";
+		break;
+	case COPAS:
+		suitName = "Cups";
+		break;
+	case ESPADAS:
+		suitName = "Swords";
+		break;
+	case BASTOS:
+		suitName = "Clubs";
+		break;
+	default: break;
+	}
+	return suitName;
+}
 
-	// You decide what functions you'll need...
+// Accessor: returns a string with the rank of the card in English 
+// This is just a stub! Modify it to your liking.
+string Card::get_english_rank() const {
+	string rankName;
+	switch (rank) {
+	case AS:
+		rankName = "Ace";
+		break;
+	case DOS:
+		rankName = "Two";
+		break;
+	case TRES:
+		rankName = "Three";
+		break;
+	case CUATRO:
+		rankName = "Four";
+		break;
+	case CINCO:
+		rankName = "Five";
+		break;
+	case SEIS:
+		rankName = "Six";
+		break;
+	case SIETE:
+		rankName = "Seven";
+		break;
+	case SOTA:
+		rankName = "Jack";
+		break;
+	case CABALLO:
+		rankName = "Knight";
+		break;
+	case REY:
+		rankName = "King";
+		break;
+	default: break;
+	}
+	return rankName;
+}
 
-private:
-	int money;
-	// You decide what extra fields (if any) you'll need...
-	Hand playerHand;
-};
 
-#endif#pragma once
+
+// Assigns a numerical value to card based on rank.
+// AS=1, DOS=2, ..., SIETE=7, SOTA=10, CABALLO=11, REY=12
+int Card::get_rank() const {
+	return static_cast<int>(rank) + 1;
+}
+
+// Comparison operator for cards
+// Returns TRUE if card1 < card2
+bool Card::operator < (Card card2) const {
+	return rank < card2.rank;
+}
+
+double Card::value()
+{
+	int value=0;
+	if (rank == AS)
+		value=1;
+	else if (rank == DOS)
+		value=2;
+	else if (rank == TRES)
+		value=3;
+	else if (rank == CUATRO)
+		value=4;
+	else if (rank == CINCO)
+		value=5;
+	else if (rank == SEIS)
+		value=6;
+	else if (rank == SIETE)
+		value=7;
+	else if (rank == SOTA || rank == CABALLO || rank == REY)
+		value=0.5;
+		return value;
+}
+
+
+/* *************************************************
+Hand class
+************************************************* */
+// Implemente the member functions of the Hand class here.
+
+Hand::Hand()
+{
+	srand((int)time(NULL));
+}
+void Hand::addCard(Card newCard)
+{
+	myCards.push_back(newCard);
+	count += newCard.value();
+}
+void Hand::printCards()
+{
+	for (int i = 0; i < myCards.size(); i++) {
+	cout << myCards.at(i).get_english_rank() << " of " << myCards.at(i).get_english_suit << endl; }
+}
+void Hand::erase()
+{
+	myCards.clear();
+	count = 0.0;
+}
+
+
+/* *************************************************
+Player class
+************************************************* */
+// Implemente the member functions of the Player class here.
+
+Player::Player(int m)
+{
+	money = m;
+}
+void Player::addCard(Card newCard)
+{
+	playerHand.addCard(newCard);
+}
+void Player::printCards()
+{
+	playerHand.printCards();
+}
+
+void Player::newHand()
+{
+	playerHand.erase();
+}
