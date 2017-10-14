@@ -224,7 +224,7 @@ void Hand::addCard(Card newCard)
 void Hand::printCards()
 {
 	for (int i = 0; i < myCards.size(); i++) {
-	cout << myCards.at(i).get_english_rank() << " of " << myCards.at(i).get_english_suit << endl; }
+	cout << myCards[i].get_english_rank() << " of " << myCards[i].get_english_suit << endl; }
 }
 void Hand::erase()
 {
